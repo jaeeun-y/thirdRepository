@@ -70,21 +70,22 @@ class AppController:
     def __init__(self):
         self.perf_data = {}
 
-    while True:
-            print("\n--- Mini NPU Simulator ---")
-            print("1. 사용자 입력 모드 (3x3)")
-            print("2. data.json 분석 모드")
-            print("3. 종료")
-            choice = input("모드를 선택하세요: ")
+    def run(self):
+        while True:
+                print("\n--- Mini NPU Simulator ---")
+                print("1. 사용자 입력 모드 (3x3)")
+                print("2. data.json 분석 모드")
+                print("3. 종료")
+                choice = input("모드를 선택하세요: ")
 
-            if choice == '1':
-                self.run_mode_1()
-            elif choice == '2':
-                self.run_mode_2()
-            elif choice == '3':
-                break
-            else:
-                print("잘못된 입력입니다.")
+                if choice == '1':
+                    self.run_mode_1()
+                elif choice == '2':
+                    self.run_mode_2()
+                elif choice == '3':
+                    break
+                else:
+                    print("잘못된 입력입니다.")
     
     def run_mode_1(self):
         print("\n[모드 1: 사용자 입력 (3x3)]")
@@ -192,7 +193,7 @@ class AppController:
         self.print_performance()
         
     def print_performance(self):
-        # [COMMIT: 크기별 평균 연산 시간(ms)과 연산 횟수 표 출력]
+
         if not self.perf_data:
             return
         print("\n--- 성능 분석 표 ---")
