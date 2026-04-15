@@ -174,3 +174,19 @@ class AppController:
                 failed += 1
                 pass_str = "FAIL"
                 fail_reasons.append(f"[{p_key}] 오답 (기대값: {expected}, 실제: {result})")
+            
+            print(f"[{p_key}] Cross점수: {score_cross:.2f} | X점수: {score_x:.2f} | 판정: {result} -> {pass_str}")
+
+            # 성능 기록
+            _, avg_time, ops = NPUSimulator.measure_performance(input_pattern, filter_cross)
+            self.perf_data[n] = (avg_time, ops)
+
+        # 결과 요약 및 성능 분석 출력
+        print("\n--- 분석 완료 요약 ---")
+        print(f"전체 테스트 수: {total} | 통과: {passed} | 실패: {failed}")
+        if failed > 0:
+            print("\n[실패 사유 요약]")
+            for reason in fail_reasons:
+                print(f"- {reason}")
+
+        self.print_performance()
