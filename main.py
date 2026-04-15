@@ -63,3 +63,114 @@ class DataManager:
         if label in ['+', 'cross']: return 'Cross'
         if label in ['x']: return 'X'
         return 'UNKNOWN'
+    
+class AppController:
+    """프로그램 실행 흐름 및 UI를 제어하는 클래스"""
+    
+    def __init__(self):
+        self.perf_data = {}
+
+    while True:
+            print("\n--- Mini NPU Simulator ---")
+            print("1. 사용자 입력 모드 (3x3)")
+            print("2. data.json 분석 모드")
+            print("3. 종료")
+            choice = input("모드를 선택하세요: ")
+
+            if choice == '1':
+                self.run_mode_1()
+            elif choice == '2':
+                self.run_mode_2()
+            elif choice == '3':
+                break
+            else:
+                print("잘못된 입력입니다.")
+    
+    def run_mode_1(self):
+        print("\n[모드 1: 사용자 입력 (3x3)]")
+        filter_a = DataManager.input_matrix(3, "필터 A")
+        filter_b = DataManager.input_matrix(3, "필터 B")
+        pattern = DataManager.input_matrix(3, "패턴")
+
+        score_a = NPUSimulator.calculate_mac(pattern, filter_a)
+        score_b = NPUSimulator.calculate_mac(pattern, filter_b)
+        result = NPUSimulator.judge(score_a, score_b)
+
+        print(f"\n[결과] 필터 A 점수: {score_a:.2f}, 필터 B 점수: {score_b:.2f}")
+        print(f"판정 결과: {result}")
+
+        # 성능 분석 저장 (크기, 시간, 연산횟수)
+        n, avg_time, ops = NPUSimulator.measure_performance(pattern, filter_a)
+        self.perf_data[n] = (avg_time, ops)
+        self.print_performance()
+
+    def run_mode_2(self):
+        print("\n[모드 2: data.json 분석]")
+        try:
+            with open('data.json', 'r') as f:
+                data = json.load(f)
+        except FileNotFoundError:
+            print("오류: data.json 파일을 찾을 수 없습니다.")
+            return
+
+        filters = data.get('filters', {})
+        patterns = data.get('patterns', {})
+        
+        # 필터 라벨 정규화
+        normalized_filters = {}
+        for size_key, filter_dict in filters.items():
+            normalized_filters[size_key] = {}
+            for label, matrix in filter_dict.items():
+                norm_label = DataManager.normalize_label(label)
+                normalized_filters[size_key][norm_label] = matrix
+
+        total, passed, failed = 0, 0, 0
+        fail_reasons = []
+
+        for p_key, p_data in patterns.items():
+            total += 1
+            try:
+                # size_N_idx 형태에서 N 추출
+                n_str = p_key.split('_')[1]
+                n = int(n_str)
+                size_key = f"size_{n}"
+            except (IndexError, ValueError):
+                failed += 1
+                fail_reasons.append(f"[{p_key}] 키 형식 오류 (크기 추출 실패)")
+                continue
+
+            input_pattern = p_data.get('input', [])
+            expected_raw = p_data.get('expected', '')
+            expected = DataManager.normalize_label(expected_raw)
+
+            if len(input_pattern) != n or any(len(row) != n for row in input_pattern):
+                failed += 1
+                fail_reasons.append(f"[{p_key}] 패턴 크기 불일치 (기대값: {n}x{n})")
+                continue
+
+            if size_key not in normalized_filters:
+                failed += 1
+                fail_reasons.append(f"[{p_key}] {size_key} 필터가 존재하지 않음")
+                continue
+
+            filter_cross = normalized_filters[size_key].get('Cross')
+            filter_x = normalized_filters[size_key].get('X')
+
+            if not filter_cross or not filter_x:
+                failed += 1
+                fail_reasons.append(f"[{p_key}] 해당 크기의 Cross/X 필터 누락")
+                continue
+
+            score_cross = NPUSimulator.calculate_mac(input_pattern, filter_cross)
+            score_x = NPUSimulator.calculate_mac(input_pattern, filter_x)
+            
+            result = NPUSimulator.judge(score_cross, score_x, 'Cross', 'X')
+            is_pass = (result == expected)
+            
+            if is_pass:
+                passed += 1
+                pass_str = "PASS"
+            else:
+                failed += 1
+                pass_str = "FAIL"
+                fail_reasons.append(f"[{p_key}] 오답 (기대값: {expected}, 실제: {result})")
