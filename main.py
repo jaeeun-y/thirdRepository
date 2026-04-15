@@ -55,3 +55,11 @@ class DataManager:
                 print(f"입력 형식 오류: 각 줄에 {size}개의 숫자를 공백으로 구분해 입력하세요.")
                 matrix = [] # 초기화 후 재입력 유도
         return matrix
+    
+    @staticmethod
+    def normalize_label(label):
+
+        label = str(label).lower()
+        if label in ['+', 'cross']: return 'Cross'
+        if label in ['x']: return 'X'
+        return 'UNKNOWN'
