@@ -23,3 +23,16 @@ class NPUSimulator:
         if abs(score_a - score_b) < EPSILON:
             return 'UNDECIDED'
         return label_a if score_a > score_b else label_b
+    
+    @staticmethod
+    def measure_performance(pattern, filter_matrix):
+
+        start_time = time.perf_counter()
+        for _ in range(ITERATIONS):
+            NPUSimulator.calculate_mac(pattern, filter_matrix)
+        end_time = time.perf_counter()
+        
+        avg_time_ms = ((end_time - start_time) / ITERATIONS) * 1000
+        n = len(pattern)
+        ops = n * n
+        return n, avg_time_ms, ops
