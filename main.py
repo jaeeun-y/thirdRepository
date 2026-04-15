@@ -190,3 +190,19 @@ class AppController:
                 print(f"- {reason}")
 
         self.print_performance()
+        
+    def print_performance(self):
+        # [COMMIT: 크기별 평균 연산 시간(ms)과 연산 횟수 표 출력]
+        if not self.perf_data:
+            return
+        print("\n--- 성능 분석 표 ---")
+        print(f"{'크기(NxN)':<12} | {'평균 시간(ms)':<15} | {'연산 횟수(N^2)':<15}")
+        print("-" * 50)
+        for n in sorted(self.perf_data.keys()):
+            avg_time, ops = self.perf_data[n]
+            print(f"{f'{n}x{n}':<12} | {avg_time:<15.6f} | {ops:<15}")
+
+
+if __name__ == "__main__":
+    app = AppController()
+    app.run()
