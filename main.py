@@ -1,5 +1,6 @@
 import json
 import time
+from typing import Dict, List, Tuple, Optional
 
 EPSILON = 1e-9
 ITERATIONS = 10
@@ -14,19 +15,14 @@ class NPUSimulator:
         self.filter_size = len(filter_matrix)
     
 
-   def calculate_mac(self, pattern: Matrix) -> float:
-        """
-        개선점:
-        1. 크기 불일치 검증 추가
-        2. 인스턴스 변수로 필터 접근 → 매번 전달 불필요
-        """
+    def calculate_mac(self, pattern: Matrix) -> float:
+
         n = self.filter_size
         if len(pattern) != n or any(len(row) != n for row in pattern):
             raise ValueError(
                 f"패턴 크기가 필터({n}x{n})와 일치하지 않습니다."
             )
 
-        # ── 리스트 컴프리헨션으로 성능 + 가독성 개선 ──
         return sum(
             pattern[i][j] * self.filter_matrix[i][j]
             for i in range(n)
@@ -41,7 +37,7 @@ class NPUSimulator:
         label_b: str = 'B',
         epsilon: float = EPSILON
     ) -> str:
-        """개선: epsilon을 파라미터로 받아 유연성 확보"""
+
         if abs(score_a - score_b) < epsilon:
             return 'UNDECIDED'
         return label_a if score_a > score_b else label_b
@@ -49,12 +45,7 @@ class NPUSimulator:
     def measure_performance(
         self, pattern: Matrix, iterations: int = ITERATIONS
     ) -> dict:
-        """
-        개선점:
-        1. 반환값을 dict로 → 의미 명확
-        2. iterations 파라미터화
-        3. 0 나누기 방지
-        """
+
         if iterations <= 0:
             raise ValueError("iterations는 1 이상이어야 합니다.")
 
@@ -77,7 +68,6 @@ class NPUSimulator:
 class DataManager:
     """데이터 입출력 및 전처리 담당"""
 
-    # ── 라벨 매핑 테이블 (확장 용이) ──
     LABEL_MAP = {
         '+': 'Cross', 'cross': 'Cross', '십자': 'Cross',
         'x': 'X', '엑스': 'X',
@@ -86,11 +76,7 @@ class DataManager:
 
     @staticmethod
     def input_matrix(size: int, name: str) -> Matrix:
-        """
-        개선점:
-        1. 오류 시 해당 줄만 재입력 (전체 초기화 X)
-        2. 빈 입력 처리
-        """
+
         print(f"\n{name} ({size}x{size})를 한 줄씩 공백으로 구분하여 입력하세요:")
         matrix = []
         while len(matrix) < size:
@@ -110,14 +96,14 @@ class DataManager:
 
     @classmethod
     def normalize_label(cls, label: str) -> str:
-        """개선: 딕셔너리 기반 매핑 → 확장 용이"""
+
         return cls.LABEL_MAP.get(str(label).lower().strip(), 'UNKNOWN')
     
 class AppController:
     """프로그램 실행 흐름 및 UI를 제어하는 클래스"""
 
     def __init__(self):
-        # ── 성능 데이터: 리스트로 변경하여 누적 가능 ──
+
         self.perf_data: Dict[int, List[Tuple[float, int]]] = {}
 
     # ═══════════════════════════════════════════
@@ -125,21 +111,26 @@ class AppController:
     # ═══════════════════════════════════════════
     def run(self):
         while True:
-            print("\n--- Mini NPU Simulator ---")
-            print("1. 사용자 입력 모드 (3x3)")
-            print("2. data.json 분석 모드")
-            print("3. 종료")
-            choice = input("모드를 선택하세요: ").strip()
+            try:
+                print("\n--- Mini NPU Simulator ---")
+                print("1. 사용자 입력 모드 (3x3)")
+                print("2. data.json 분석 모드")
+                print("3. 종료")
+                choice = input("모드를 선택하세요: ").strip()
 
-            if choice == '1':
-                self.run_mode_1()
-            elif choice == '2':
-                self.run_mode_2()
-            elif choice == '3':
-                print("프로그램을 종료합니다.")
-                break
-            else:
-                print("⚠ 1, 2, 3 중에서 선택하세요.")
+                if choice == '1':
+                    self.run_mode_1()
+                elif choice == '2':
+                    self.run_mode_2()
+                elif choice == '3':
+                    print("프로그램을 종료합니다.")
+                    break
+                else:
+                    print("⚠ 1, 2, 3 중에서 선택하세요.")
+                
+            except KeyboardInterrupt:
+                # Ctrl+C를 눌렀을 때 아래 메시지 출력 후 반복문 계속 진행
+                print("\n\n⚠ [안내] Ctrl+C가 입력되었습니다. 프로그램을 안전하게 종료하려면 '3'번을 선택해 주세요.")
 
     # ═══════════════════════════════════════════
     # 모드 1: 수동 입력
