@@ -1,5 +1,22 @@
+# ThirdRepository
+
+## 🚀jaeeunsRepository
+
+### 📝프로젝트 개요  
+
+### 📝퀴즈 주제 선정 이유
+ - 파이썬 실력이 부족한 필자를 위함.
+
+### 📝실행 방법
+
+### 📝기능 목록
+
+### 📝파일 구조
+
+### 📝데이터 파일 설명
+
 ┌───────────────────────────────────────┐  
-│              ### AppController              
+             ### AppController              
 │  (프로그램 흐름 제어 + UI)                   
 │                                                								
 │     run() ─→  run_mode_1() →	수동모드    	
@@ -18,7 +35,7 @@
 
 │    ─→  print_performance() →	누적된 성능 데이터를 표로 출력  	  	     
 ├───────────────────────────────────────┤  
-│              ### NPUSimulator                      
+         ### NPUSimulator                      
 │  (핵심 연산 엔진)                                 
 │                                                
 │  __init__(filter)  	   → 필터 저장                   
@@ -26,7 +43,7 @@
 │  judge()           	   → 점수 비교 판정             
 │  measure_performance()   → 성능 측정              
 ├───────────────────────────────────────┤  
-│             ### DataManager                        
+          ### DataManager                        
 │  (입출력 + 데이터 전처리)                       
 │                                               
 │  input_matrix()     		→ 행렬 입력                
