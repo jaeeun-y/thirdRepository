@@ -3,7 +3,7 @@
 ## 🚀jaeeunsRepository
 
 ### 📝프로젝트 개요  
-NPU(Neural Processing Unit)의 핵심인 MAC(Multiply-Accumulate) 연산을 구현하고, 입력된 패턴이 어떤 필터에더 가까운지 판별하는 시뮬레이터 입니다.
+NPU(Neural Processing Unit)의 핵심인 MAC(Multiply-Accumulate) 연산을 구현하고, 입력된 패턴이 어떤 필터에 더 가까운지 판별하는 시뮬레이터 입니다.
 
 
 ### 📝실행 방법
