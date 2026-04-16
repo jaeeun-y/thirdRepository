@@ -214,12 +214,58 @@ class AppController:
             with open(filepath, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except FileNotFoundError:
-            print(f"⚠ 오류: {filepath} 파일을 찾을 수 없습니다.")
+            print(f"⚠ 오류: {filepath} 파일을 찾을 수 없습니다. 기본 데이터로 파일을 자동 복구합니다...")
+            return self._restore_default_json(filepath)
         except json.JSONDecodeError as e:
             print(f"⚠ JSON 파싱 오류: {e}")
         except PermissionError:
             print(f"⚠ 권한 오류: {filepath}을 읽을 수 없습니다.")
         return None
+    
+    def _restore_default_json(self, filepath: str) -> Optional[dict]:
+        """data.json이 없을 때 기본 데이터를 생성하여 저장하는 메서드"""
+        default_data = {
+            "filters": {
+                "size_5": {
+                    "Cross": [
+                        [0, 0, 1, 0, 0],
+                        [0, 0, 1, 0, 0],
+                        [1, 1, 1, 1, 1],
+                        [0, 0, 1, 0, 0],
+                        [0, 0, 1, 0, 0]
+                    ],
+                    "X": [
+                        [1, 0, 0, 0, 1],
+                        [0, 1, 0, 1, 0],
+                        [0, 0, 1, 0, 0],
+                        [0, 1, 0, 1, 0],
+                        [1, 0, 0, 0, 1]
+                    ]
+                }
+            },
+            "patterns": {
+                "size_5_01": {
+                    "input": [
+                        [0, 0, 1, 0, 0],
+                        [0, 0, 1, 0, 0],
+                        [1, 1, 1, 1, 1],
+                        [0, 0, 1, 0, 0],
+                        [0, 0, 1, 0, 0]
+                    ],
+                    "expected": "+"
+                }
+            }
+        }
+        
+        try:
+            # w 모드로 열어서 기본 데이터를 예쁘게(indent=4) 저장해줍니다.
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(default_data, f, indent=4)
+            print("✔ 복구 완료! 분석을 계속 진행합니다.")
+            return default_data
+        except Exception as e:
+            print(f"⚠ 파일 생성 실패: {e}")
+            return None
 
     @staticmethod
     def _normalize_filters(filters: dict) -> dict:
