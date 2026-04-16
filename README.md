@@ -1,30 +1,30 @@
-┌───────────────────────────────────────┐
-│              AppController            │
-│  (프로그램 흐름 제어 + UI)                 │
-│                                              								
-│ run() ─→  run_mode_1() →	수동모드		
-│       ─→  run_mode_2() →	JSON자동 테스트 모드		
-│              ├── _load_json() →	data.json 로드	 & 세분화된 예외처리	
-│              ├── _normalize_filters() →	필터 딕셔너리의 라벨을 정규화		
-│              ├── _test_single_pattern() →			
-│              └── _print_summary() →	테스트 결과 요약 출력		
-│    ─→  _record_performance() →	성능 데이터 누적 (리스트로 누적)							
-│    ─→  print_performance() →	누적된 성능 데이터를 표로 출력		     
-├───────────────────────────────────────┤
-│              NPUSimulator                    
-│  (핵심 연산 엔진)                             
-│                                              
-│  __init__(filter)  			→ 필터 저장               
-│  calculate_mac()   		→ MAC 연산                
-│  judge()           			→ 점수 비교 판정           
-│  measure_performance()   → 성능 측정            
-├───────────────────────────────────────┤
-│             DataManager                      
-│  (입출력 + 데이터 전처리)                     
-│                                              
-│  input_matrix()     		→ 행렬 입력              
-│  normalize_label()  		→ 라벨 정규화            
-└───────────────────────────────────────┘
+┌───────────────────────────────────────┐  
+│              AppController              
+│  (프로그램 흐름 제어 + UI)                   
+│                                                								
+│ run() ─→  run_mode_1() →	수동모드  		
+│       ─→  run_mode_2() →	JSON자동 테스트 모드  		
+│              ├── _load_json() →	data.json 로드	 & 세분화된 예외처리	  
+│              ├── _normalize_filters() →	필터 딕셔너리의 라벨을 정규화  		
+│              ├── _test_single_pattern() →			  
+│              └── _print_summary() →	테스트 결과 요약 출력  		
+│    ─→  _record_performance() →	성능 데이터 누적 (리스트로 누적)	  						
+│    ─→  print_performance() →	누적된 성능 데이터를 표로 출력	  	     
+├───────────────────────────────────────┤  
+│              NPUSimulator                      
+│  (핵심 연산 엔진)                                 
+│                                                
+│  __init__(filter)  	   → 필터 저장                   
+│  calculate_mac()   	   → MAC 연산                  
+│  judge()           	   → 점수 비교 판정             
+│  measure_performance()   → 성능 측정              
+├───────────────────────────────────────┤  
+│             DataManager                        
+│  (입출력 + 데이터 전처리)                       
+│                                               
+│  input_matrix()     		→ 행렬 입력                
+│  normalize_label()  		→ 라벨 정규화              
+└───────────────────────────────────────┘  
 
 
 
